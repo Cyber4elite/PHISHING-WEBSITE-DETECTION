@@ -1,0 +1,7 @@
+# PhishShield Requirements
+# For development, use: pip install -r requirements/development.txt
+# For production, use: pip install -r requirements/production.txt
+# For testing, use: pip install -r requirements/testing.txt
+
+# Base requirements (minimal for basic functionality)
+-r requirements/base.txt

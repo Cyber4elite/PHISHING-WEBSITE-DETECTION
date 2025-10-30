@@ -1,0 +1,22 @@
+# Testing requirements for PhishShield
+-r base.txt
+
+# Testing framework
+pytest>=7.0.0
+pytest-django>=4.5.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-xdist>=3.0.0  # Parallel testing
+
+# Test data generation
+factory-boy>=3.2.0
+faker>=19.0.0
+
+# Test database
+# Use in-memory SQLite for faster tests
+# Or use PostgreSQL for integration tests
+# psycopg2-binary>=2.9.0
+
+# Test utilities
+freezegun>=1.2.0  # Time mocking
+responses>=0.23.0  # HTTP mocking
