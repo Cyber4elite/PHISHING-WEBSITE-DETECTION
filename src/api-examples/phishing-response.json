@@ -1,0 +1,52 @@
+{
+  "url": "https://secure-bank-login.verification-account.com/update?id=12345",
+  "verdict": "Phishing",
+  "score": 87,
+  "confidence": 0.94,
+  "indicators": [
+    "Suspicious domain structure",
+    "Multiple suspicious keywords detected",
+    "Unusually long URL length",
+    "Suspicious subdomain pattern",
+    "No valid SSL certificate",
+    "Recent domain registration"
+  ],
+  "recommendation": "⚠️ HIGH RISK: This URL shows strong indicators of phishing. Do not enter any personal information or credentials.",
+  "evidence": {
+    "redirect_chain": [
+      "https://secure-bank-login.verification-account.com/update?id=12345",
+      "http://malicious-site.com/steal-credentials"
+    ],
+    "whois": {
+      "registrar": "Suspicious Registrar",
+      "creation_date": "2024-08-15",
+      "expiration_date": "2025-08-15",
+      "organization": "Unknown"
+    },
+    "ssl_info": {
+      "valid": false,
+      "issuer": "Self-signed",
+      "expires": null
+    }
+  },
+  "features": {
+    "url_length": 78,
+    "domain_length": 35,
+    "path_length": 6,
+    "query_length": 10,
+    "num_dots": 2,
+    "num_hyphens": 3,
+    "num_underscores": 0,
+    "num_slashes": 2,
+    "has_ip": false,
+    "has_shortener": false,
+    "has_suspicious_keywords": true,
+    "subdomain_count": 2,
+    "has_www": false,
+    "is_https": true,
+    "path_depth": 1,
+    "has_file_extension": false
+  },
+  "timestamp": "2024-09-09T16:30:45Z",
+  "analysis_time_ms": 2100
+}
