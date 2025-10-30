@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PhishShield - Detect phishing links instantly with multi-layered security checks">
+    <meta name="keywords" content="phishing detection, URL security, threat analysis, cybersecurity">
+    <meta property="og:title" content="PhishShield - Detect Phishing Links Instantly">
+    <meta property="og:description" content="Paste a URL to run multi-layered checks — domain reputation, redirect tracing, ML-based heuristics">
+    <meta property="og:type" content="website">
+    <title>PhishShield - Detect Phishing Links Instantly</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link active">🏠 Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">🔍 Scan</a>
+                    <a href="{% url 'scanner:about' %}" class="nav-link">📊 Analytics</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'scanner:profile' %}" class="nav-link">👤 {{ user.username }}</a>
+                        <a href="{% url 'scanner:logout' %}" class="nav-link">🚪 Logout</a>
+                    {% else %}
+                        <a href="{% url 'scanner:login' %}" class="nav-link">🔑 Login</a>
+                        <a href="{% url 'scanner:signup' %}" class="nav-link">📝 Sign Up</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Detect phishing links instantly</h1>
+                    <p class="hero-subtitle">Paste a URL to run multi-layered checks — domain reputation, redirect tracing, ML-based heuristics</p>
+                    
+                    <div class="hero-actions">
+                        <a href="{% url 'scanner:scan' %}" class="btn btn-primary">Scan URL</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="section">
+            <div class="container">
+                <h2 class="section-title">How It Works</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Paste URL</h3>
+                        <p>Enter any suspicious URL for instant analysis</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Analyze</h3>
+                        <p>Static checks, dynamic analysis, and ML scoring</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Get Verdict</h3>
+                        <p>Instant threat score and remediation guidance</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Export</h3>
+                        <p>Export and save detailed reports in PDF format</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section section-alt">
+            <div class="container">
+                <h2 class="section-title">Features</h2>
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Threat Score</h3>
+                        <p>0-100 risk assessment with confidence intervals</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🏢</div>
+                        <h3>Domain Reputation</h3>
+                        <p>Real-time WHOIS and reputation analysis</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔗</div>
+                        <h3>Redirect Unfolding</h3>
+                        <p>Follow redirect chains to final destination</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🤖</div>
+                        <h3>Q-Learning model with rule-based fallbacks</h3>
+                        <p>Advanced reinforcement learning with heuristic backup systems</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust Indicators -->
+        <section class="section">
+            <div class="container">
+                <h2 class="section-title">Privacy First</h2>
+                <div class="trust-indicators">
+                    <div class="trust-item">
+                        <h3>No Persistent Storage</h3>
+                        <p>URLs analyzed in memory only</p>
+                    </div>
+                    <div class="trust-item">
+                        <h3>GDPR Ready</h3>
+                        <p>Full compliance with data protection</p>
+                    </div>
+                    <div class="trust-item">
+                        <h3>Enterprise SSO</h3>
+                        <p>SAML, OAuth, and LDAP support</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="{% url 'scanner:home' %}">Home</a>
+                    <a href="{% url 'scanner:scan' %}">Scan</a>
+                    <a href="{% url 'scanner:about' %}">About</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% load static %}
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

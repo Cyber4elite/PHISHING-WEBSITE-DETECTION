@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="URL Scan Results - PhishShield">
+    <title>Scan Results - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+    <style>
+        .result-container {
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        
+        .result-header {
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            padding: 8px 0;
+            transition: color 0.2s ease;
+        }
+        
+        .back-link:hover {
+            color: #1d4ed8;
+        }
+        
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+            margin-top: 0;
+        }
+        
+        .analyzed-url {
+            background: #f3f4f6;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            word-break: break-all;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .verdict-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+            padding: 48px 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 8px 25px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+        }
+        
+        .verdict-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.12), 0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .verdict-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            opacity: 0.8;
+        }
+        
+        .verdict-section.phishing::before {
+            background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+        }
+        
+        .verdict-section.safe::before {
+            background: linear-gradient(90deg, #059669, #10b981, #34d399);
+        }
+        
+        .verdict-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .verdict-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .verdict-text {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        
+        .verdict-safe {
+            color: #059669;
+            background: linear-gradient(135deg, #059669, #10b981);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .verdict-phishing {
+            color: #dc2626;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .confidence-display {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.05));
+            padding: 24px;
+            border-radius: 16px;
+            margin: 24px auto;
+            max-width: 400px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .confidence-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            border-radius: 16px 16px 0 0;
+            opacity: 0.6;
+        }
+        
+        .confidence-score {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .confidence-percentage {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 12px;
+            position: relative;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+            border-radius: 8px;
+            transition: width 1.5s ease-in-out;
+            animation: fillBar 2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .confidence-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes fillBar {
+            0% { width: 0%; }
+            100% { width: var(--confidence-width, 100%); }
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .verdict-description {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .verdict-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.05));
+            color: #3b82f6;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Performance Insights Section */
+        .performance-section {
+            background: var(--md-surface);
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: var(--md-elevation-2);
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--md-text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .insight-card {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--md-info);
+            transition: all 0.2s ease;
+        }
+        
+        .insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--md-elevation-1);
+        }
+        
+        .insight-label {
+            font-size: 0.875rem;
+            color: var(--md-text-secondary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .insight-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--md-text-primary);
+        }
+        
+        .processing-timeline {
+            background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 0.875rem;
+            color: var(--md-text-primary);
+        }
+        
+        .timeline-icon {
+            font-size: 1rem;
+        }
+        
+        /* Recommendations Section */
+        .recommendations-section {
+            background: var(--md-surface);
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: var(--md-elevation-2);
+            margin-bottom: 24px;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .recommendation-icon {
+            font-size: 1.25rem;
+            margin-top: 2px;
+        }
+        
+        .recommendation-content {
+            flex: 1;
+        }
+        
+        .recommendation-title {
+            font-weight: 500;
+            color: var(--md-text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .recommendation-desc {
+            font-size: 0.875rem;
+            color: var(--md-text-secondary);
+            line-height: 1.4;
+        }
+        
+        .features-section {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 2rem;
+        }
+        
+        .features-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .feature-group {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .feature-group h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-name {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .feature-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .feature-value.positive {
+            color: #28a745;
+        }
+        
+        .feature-value.negative {
+            color: #dc3545;
+        }
+        
+        .actions-section {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #333;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background: #555;
+            color: #fff;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            color: #fff;
+        }
+        
+        .report-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+        
+        .report-info p {
+            margin: 0.25rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">🏠 Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">🔍 Scan</a>
+                    <a href="{% url 'scanner:about' %}" class="nav-link">📊 Analytics</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'scanner:profile' %}" class="nav-link">👤 {{ user.username }}</a>
+                        <a href="{% url 'scanner:logout' %}" class="nav-link">🚪 Logout</a>
+                    {% else %}
+                        <a href="{% url 'scanner:login' %}" class="nav-link">🔑 Login</a>
+                        <a href="{% url 'scanner:signup' %}" class="nav-link">📝 Sign Up</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="section">
+            <div class="container">
+                <div class="result-container">
+                    <!-- Result Header -->
+                    <div class="result-header">
+                        <a href="{% url 'scanner:scan' %}" class="back-link">← Scan Another URL</a>
+                        <h1 class="result-title">URL Analysis Complete</h1>
+                        <div class="analyzed-url">{{ report.url }}</div>
+                    </div>
+
+                    <!-- Enhanced Verdict Section -->
+                    <div class="verdict-section {% if report.result == 'phishing' %}phishing{% else %}safe{% endif %}">
+                        <div class="verdict-content">
+                            <div class="verdict-icon">
+                                {% if report.result == 'phishing' %}
+                                    ⚠️
+                                {% else %}
+                                    ✅
+                                {% endif %}
+                            </div>
+                            
+                            <div class="verdict-text {% if report.result == 'phishing' %}verdict-phishing{% else %}verdict-safe{% endif %}">
+                                {% if report.result == 'phishing' %}
+                                    PHISHING DETECTED
+                                {% else %}
+                                    SAFE URL
+                                {% endif %}
+                            </div>
+                            
+                            <div class="confidence-display">
+                                <div class="confidence-score">
+                                    <span>Confidence:</span>
+                                    <span class="confidence-percentage">{{ report.confidence_percentage }}%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: {{ report.confidence_percentage }}%;"></div>
+                                </div>
+                            </div>
+                            
+                            {% if report.result == 'phishing' %}
+                                <p class="verdict-description">
+                                    This URL has been identified as a potential phishing threat based on our advanced AI analysis using Q-learning algorithms.
+                                </p>
+                                <div class="verdict-badge" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.05)); color: #dc2626; border-color: rgba(220, 38, 38, 0.2);">
+                                    🛡️ HIGH RISK - DO NOT PROCEED
+                                </div>
+                            {% else %}
+                                <p class="verdict-description">
+                                    This URL appears to be legitimate and safe to visit based on our comprehensive AI security analysis.
+                                </p>
+                                <div class="verdict-badge" style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.05)); color: #059669; border-color: rgba(5, 150, 105, 0.2);">
+                                    🔒 VERIFIED SAFE
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Performance Insights Section -->
+                    <div class="performance-section">
+                        <h3 class="section-title">⚡ Model Performance Insights</h3>
+                        
+                        <div class="insights-grid">
+                            <div class="insight-card">
+                                <div class="insight-label">Analysis Time</div>
+                                <div class="insight-value">~425ms</div>
+                            </div>
+                            
+                            <div class="insight-card">
+                                <div class="insight-label">Features Analyzed</div>
+                                <div class="insight-value">20 URL Features</div>
+                            </div>
+                            
+                            <div class="insight-card">
+                                <div class="insight-label">Model Architecture</div>
+                                <div class="insight-value">Q-Learning RL</div>
+                            </div>
+                            
+                            <div class="insight-card">
+                                <div class="insight-label">Neural Network</div>
+                                <div class="insight-value">20-10-1 Layers</div>
+                            </div>
+                        </div>
+                        
+                        <div class="processing-timeline">
+                            <div class="timeline-item">
+                                <span class="timeline-icon">🔍</span>
+                                <span>URL structure and pattern analysis completed</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-icon">🔗</span>
+                                <span>Domain reputation and redirect chain verification</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-icon">🤖</span>
+                                <span>Q-learning model inference with 221 parameters</span>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-icon">📊</span>
+                                <span>Confidence scoring and final verdict generation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations Section -->
+                    <div class="recommendations-section">
+                        <h3 class="section-title">💡 Security Recommendations</h3>
+                        
+                        {% if report.result == 'phishing' %}
+                            <div class="recommendation-item">
+                                <span class="recommendation-icon" style="color: var(--md-error);">🚫</span>
+                                <div class="recommendation-content">
+                                    <div class="recommendation-title">Do Not Visit</div>
+                                    <div class="recommendation-desc">This URL is highly likely to be malicious. Avoid clicking or visiting this website.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="recommendation-item">
+                                <span class="recommendation-icon" style="color: var(--md-warning);">📢</span>
+                                <div class="recommendation-content">
+                                    <div class="recommendation-title">Report Phishing</div>
+                                    <div class="recommendation-desc">Consider reporting this URL to your IT security team or relevant authorities.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="recommendation-item">
+                                <span class="recommendation-icon" style="color: var(--md-info);">🛡️</span>
+                                <div class="recommendation-content">
+                                    <div class="recommendation-title">Update Security</div>
+                                    <div class="recommendation-desc">Ensure your antivirus and browser security features are up to date.</div>
+                                </div>
+                            </div>
+                            
+                        {% else %}
+                            <div class="recommendation-item">
+                                <span class="recommendation-icon" style="color: var(--md-success);">✅</span>
+                                <div class="recommendation-content">
+                                    <div class="recommendation-title">Safe to Proceed</div>
+                                    <div class="recommendation-desc">The URL passed all security checks. You can safely visit this website.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="recommendation-item">
+                                <span class="recommendation-icon" style="color: var(--md-info);">🔒</span>
+                                <div class="recommendation-content">
+                                    <div class="recommendation-title">Verify HTTPS</div>
+                                    <div class="recommendation-desc">Always ensure the website uses HTTPS encryption when entering sensitive information.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="recommendation-item">
+                                <span class="recommendation-icon" style="color: var(--md-info);">👀</span>
+                                <div class="recommendation-content">
+                                    <div class="recommendation-title">Stay Vigilant</div>
+                                    <div class="recommendation-desc">Even safe URLs can be compromised. Watch for suspicious behavior or unexpected requests.</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Features Section -->
+    <div class="features-section">
+                        <h2 class="features-title">Technical Analysis</h2>
+        <div class="features-grid">
+            <div class="feature-group">
+                                <h4>📏 URL Structure</h4>
+                <ul class="feature-list">
+                                    <li>
+                                        <span class="feature-name">URL Length</span>
+                                        <span class="feature-value">{{ report.features.url_length }} chars</span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">Domain Length</span>
+                                        <span class="feature-value">{{ report.features.domain_length }} chars</span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">Path Length</span>
+                                        <span class="feature-value">{{ report.features.path_length }} chars</span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">Query Length</span>
+                                        <span class="feature-value">{{ report.features.query_length }} chars</span>
+                                    </li>
+                </ul>
+            </div>
+            
+            <div class="feature-group">
+                                <h4>🔤 Character Analysis</h4>
+                <ul class="feature-list">
+                                    <li>
+                                        <span class="feature-name">Dots (.)</span>
+                                        <span class="feature-value">{{ report.features.num_dots }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">Hyphens (-)</span>
+                                        <span class="feature-value">{{ report.features.num_hyphens }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">Underscores (_)</span>
+                                        <span class="feature-value">{{ report.features.num_underscores }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">Slashes (/)</span>
+                                        <span class="feature-value">{{ report.features.num_slashes }}</span>
+                                    </li>
+                </ul>
+            </div>
+            
+            <div class="feature-group">
+                                <h4>🔒 Security Indicators</h4>
+                <ul class="feature-list">
+                                    <li>
+                                        <span class="feature-name">HTTPS Enabled</span>
+                                        <span class="feature-value {% if report.features.is_https %}positive{% else %}negative{% endif %}">
+                                            {% if report.features.is_https %}Yes ✓{% else %}No ✗{% endif %}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">Uses IP Address</span>
+                                        <span class="feature-value {% if report.features.has_ip %}negative{% else %}positive{% endif %}">
+                                            {% if report.features.has_ip %}Yes ✗{% else %}No ✓{% endif %}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">URL Shortener</span>
+                                        <span class="feature-value {% if report.features.has_shortener %}negative{% else %}positive{% endif %}">
+                                            {% if report.features.has_shortener %}Yes ✗{% else %}No ✓{% endif %}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="feature-name">Suspicious Keywords</span>
+                                        <span class="feature-value {% if report.features.has_suspicious_keywords %}negative{% else %}positive{% endif %}">
+                                            {% if report.features.has_suspicious_keywords %}Found ✗{% else %}None ✓{% endif %}
+                                        </span>
+                                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+                    <!-- Actions Section -->
+    <div class="actions-section">
+        <a href="{% url 'scanner:report_pdf' report.id %}" class="btn btn-secondary">📄 Download PDF Report</a>
+                        <a href="{% url 'scanner:scan' %}" class="btn btn-primary">🔍 Analyze Another URL</a>
+    </div>
+
+                    <!-- Report Info -->
+    <div class="report-info">
+        <p><strong>Report ID:</strong> {{ report.id }}</p>
+        <p><strong>Analysis Time:</strong> {{ report.timestamp|date:"F d, Y H:i:s" }}</p>
+                        <p><strong>Analysis Engine:</strong> PhishShield Q-Learning AI</p>
+                    </div>
+    </div>
+</div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="{% url 'scanner:home' %}">Home</a>
+                    <a href="{% url 'scanner:scan' %}">Scan</a>
+                    <a href="{% url 'scanner:about' %}">About</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

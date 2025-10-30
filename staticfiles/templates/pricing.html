@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PhishShield Pricing - Simple, transparent pricing for phishing detection">
+    <title>Pricing - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+    <style>
+        .hero-pricing {
+            background: #f8f9fa;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero-pricing h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-pricing p {
+            font-size: 1.25rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .pricing-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .pricing-card {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .pricing-card.featured {
+            border: 2px solid #333;
+            transform: scale(1.05);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-2px);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-period {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-features li {
+            padding: 0.5rem 0;
+            color: #666;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .plan-features li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .plan-button {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .plan-button.primary {
+            background: #333;
+            color: #fff;
+        }
+        
+        .plan-button.primary:hover {
+            background: #555;
+        }
+        
+        .plan-button.secondary {
+            background: transparent;
+            color: #333;
+            border: 1px solid #333;
+        }
+        
+        .plan-button.secondary:hover {
+            background: #333;
+            color: #fff;
+        }
+        
+        .comparison-table {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+        
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .comparison-table td {
+            color: #666;
+        }
+        
+        .comparison-table .feature-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .comparison-table .check {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .comparison-table .cross {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .faq-section {
+            background: #f8f9fa;
+            padding: 3rem 0;
+        }
+        
+        .faq-item {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .faq-question:hover {
+            background: #f8f9fa;
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: #666;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-icon {
+            transition: transform 0.2s ease;
+        }
+        
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">Scan</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#docs" class="nav-link">Docs</a>
+                    <a href="#pricing" class="nav-link">Pricing</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero-pricing">
+            <div class="container">
+                <h1>Simple, transparent pricing</h1>
+                <p>Choose the plan that fits your needs. Start free and upgrade as you grow.</p>
+            </div>
+        </section>
+
+        <section class="pricing-container">
+            <div class="container">
+                <div class="pricing-grid">
+                    <!-- Free Plan -->
+                    <div class="pricing-card">
+                        <div class="plan-name">Free</div>
+                        <div class="plan-price">$0</div>
+                        <div class="plan-period">forever</div>
+                        <ul class="plan-features">
+                            <li>10 scans per day</li>
+                            <li>Basic threat scoring</li>
+                            <li>Web interface</li>
+                            <li>Community support</li>
+                            <li>Standard response time</li>
+                        </ul>
+                        <a href="{% url 'scanner:scan' %}" class="plan-button secondary">Get Started Free</a>
+                    </div>
+
+                    <!-- Pro Plan -->
+                    <div class="pricing-card featured">
+                        <div class="popular-badge">Most Popular</div>
+                        <div class="plan-name">Pro</div>
+                        <div class="plan-price">$29</div>
+                        <div class="plan-period">per month</div>
+                        <ul class="plan-features">
+                            <li>1,000 scans per day</li>
+                            <li>Full threat analysis</li>
+                            <li>API access</li>
+                            <li>Priority support</li>
+                            <li>Advanced analytics</li>
+                            <li>SIEM integrations</li>
+                            <li>Custom webhooks</li>
+                        </ul>
+                        <a href="#contact" class="plan-button primary">Start Pro Trial</a>
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="pricing-card">
+                        <div class="plan-name">Enterprise</div>
+                        <div class="plan-price">Custom</div>
+                        <div class="plan-period">contact us</div>
+                        <ul class="plan-features">
+                            <li>Unlimited scans</li>
+                            <li>Custom ML models</li>
+                            <li>Dedicated support</li>
+                            <li>SLA guarantee</li>
+                            <li>On-premise deployment</li>
+                            <li>Custom integrations</li>
+                            <li>White-label options</li>
+                        </ul>
+                        <a href="#contact" class="plan-button secondary">Contact Sales</a>
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Free</th>
+                                <th>Pro</th>
+                                <th>Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature-name">Daily Scans</td>
+                                <td>10</td>
+                                <td>1,000</td>
+                                <td>Unlimited</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">API Access</td>
+                                <td class="cross">✗</td>
+                                <td class="check">✓</td>
+                                <td class="check">✓</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Advanced Analytics</td>
+                                <td class="cross">✗</td>
+                                <td class="check">✓</td>
+                                <td class="check">✓</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">SIEM Integrations</td>
+                                <td class="cross">✗</td>
+                                <td class="check">✓</td>
+                                <td class="check">✓</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">Priority Support</td>
+                                <td class="cross">✗</td>
+                                <td class="check">✓</td>
+                                <td class="check">✓</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">SLA Guarantee</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                                <td class="check">✓</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">On-premise Deployment</td>
+                                <td class="cross">✗</td>
+                                <td class="cross">✗</td>
+                                <td class="check">✓</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="faq-section">
+                    <h2 class="section-title">Frequently Asked Questions</h2>
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>Can I change plans at any time?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any billing differences.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>What happens if I exceed my scan limit?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>If you exceed your daily scan limit, you'll receive a notification and can either wait until the next day or upgrade your plan for more scans.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>Is there a free trial for Pro plans?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, we offer a 14-day free trial for all Pro plans. No credit card required to start your trial.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>Do you offer custom pricing for large organizations?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, we offer custom Enterprise plans with volume discounts, dedicated support, and custom features. Contact our sales team for more information.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>What payment methods do you accept?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>We accept all major credit cards, PayPal, and for Enterprise customers, we can arrange invoicing and bank transfers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#docs">Docs</a>
+                    <a href="#api">API</a>
+                    <a href="#blog">Blog</a>
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                </div>
+                <div class="footer-cta">
+                    <a href="{% url 'scanner:scan' %}" class="btn btn-primary">Get Started Free</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            faqItem.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Model Maintenance - PhishShield">
+    <title>Model Maintenance - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+    <style>
+        .maintenance-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .maintenance-header {
+            background: var(--md-surface);
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: var(--md-elevation-2);
+            margin-bottom: 24px;
+            text-align: center;
+            border-left: 4px solid var(--md-primary);
+        }
+        
+        .maintenance-title {
+            font-size: 2rem;
+            font-weight: 500;
+            color: var(--md-text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .maintenance-subtitle {
+            color: var(--md-text-secondary);
+            font-size: 1rem;
+            margin: 0;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .info-card {
+            background: var(--md-surface);
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: var(--md-elevation-2);
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .info-card:hover {
+            box-shadow: var(--md-elevation-3);
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--md-text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: var(--md-text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: var(--md-text-primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-online {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--md-success);
+        }
+        
+        .status-offline {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--md-error);
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .metric-item {
+            text-align: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid var(--md-primary);
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--md-text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--md-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .actions-card {
+            background: var(--md-surface);
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: var(--md-elevation-2);
+            margin-bottom: 24px;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .action-btn:focus {
+            outline: 2px solid var(--md-primary);
+            outline-offset: 2px;
+        }
+        
+        .btn-retrain {
+            background: var(--md-success);
+            color: white;
+            box-shadow: var(--md-elevation-2);
+        }
+        
+        .btn-retrain:hover {
+            background: #388e3c;
+            box-shadow: var(--md-elevation-3);
+        }
+        
+        .btn-export {
+            background: var(--md-info);
+            color: white;
+            box-shadow: var(--md-elevation-2);
+        }
+        
+        .btn-export:hover {
+            background: #1565c0;
+            box-shadow: var(--md-elevation-3);
+        }
+        
+        .btn-threat-feed {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--md-elevation-2);
+        }
+        
+        .btn-threat-feed:hover {
+            background: linear-gradient(135deg, #e55a2b 0%, #e0831a 100%);
+            transform: translateY(-1px);
+            box-shadow: var(--md-elevation-4);
+        }
+        
+        .btn-threat-feed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-threat-feed:hover::before {
+            left: 100%;
+        }
+        
+        .btn-back {
+            background: var(--md-text-secondary);
+            color: white;
+            box-shadow: var(--md-elevation-1);
+        }
+        
+        .btn-back:hover {
+            background: #424242;
+            box-shadow: var(--md-elevation-2);
+        }
+        
+        .usage-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .usage-item {
+            text-align: center;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.1), rgba(25, 118, 210, 0.05));
+            border-radius: 8px;
+            border: 1px solid rgba(25, 118, 210, 0.2);
+        }
+        
+        .usage-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--md-primary);
+            margin-bottom: 4px;
+        }
+        
+        .usage-label {
+            font-size: 0.875rem;
+            color: var(--md-text-secondary);
+            font-weight: 500;
+        }
+        
+        .alert {
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--md-success);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .alert-warning {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--md-warning);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            background-color: var(--md-surface);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--md-elevation-8);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--md-text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--md-text-secondary);
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(0,0,0,0.1);
+            color: var(--md-text-primary);
+        }
+        
+        .modal-body {
+            padding: 24px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-btn-cancel {
+            background: transparent;
+            color: var(--md-text-secondary);
+        }
+        
+        .modal-btn-cancel:hover {
+            background: rgba(0,0,0,0.04);
+        }
+        
+        .modal-btn-primary {
+            background: var(--md-success);
+            color: white;
+        }
+        
+        .modal-btn-primary:hover {
+            background: #388e3c;
+        }
+        
+        .modal-btn-primary:disabled {
+            background: var(--md-text-disabled);
+            cursor: not-allowed;
+        }
+        
+        .warning-section {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            display: none;
+        }
+        
+        .warning-section.show {
+            display: block;
+            animation: warningSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes warningSlideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .warning-icon {
+            font-size: 1.5rem;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        .warning-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .warning-text {
+            color: #856404;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .selected-datasets {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        
+        .selected-datasets-title {
+            font-weight: 500;
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .selected-datasets-list {
+            font-size: 0.8rem;
+            color: #6c5701;
+            line-height: 1.4;
+        }
+        
+        .dataset-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            border: 1px solid #e9ecef;
+            transition: border-color 0.2s ease;
+        }
+        
+        .dataset-item:hover {
+            border-color: var(--md-primary);
+        }
+        
+        .dataset-checkbox {
+            margin-top: 2px;
+            transform: scale(1.2);
+            accent-color: var(--md-primary);
+        }
+        
+        .dataset-info {
+            flex: 1;
+        }
+        
+        .dataset-name {
+            font-weight: 500;
+            color: var(--md-text-primary);
+            cursor: pointer;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .dataset-description {
+            font-size: 0.8rem;
+            color: var(--md-text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .dataset-meta {
+            font-size: 0.75rem;
+            color: var(--md-text-disabled);
+            display: flex;
+            gap: 16px;
+        }
+        
+        .selection-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .selection-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .selection-btn-all {
+            background: var(--md-primary);
+            color: white;
+        }
+        
+        .selection-btn-all:hover {
+            background: var(--md-primary-dark);
+        }
+        
+        .selection-btn-none {
+            background: var(--md-text-secondary);
+            color: white;
+        }
+        
+        .selection-btn-none:hover {
+            background: #424242;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">🏠 Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">🔍 Scan</a>
+                    <a href="{% url 'scanner:about' %}" class="nav-link">📊 Analytics</a>
+                    <a href="{% url 'scanner:profile' %}" class="nav-link">👤 {{ user.username }}</a>
+                    <a href="{% url 'scanner:logout' %}" class="nav-link">🚪 Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="maintenance-container">
+            <!-- Header -->
+            <div class="maintenance-header">
+                <h1 class="maintenance-title">🔧 Model Maintenance</h1>
+                <p class="maintenance-subtitle">Manage and monitor the PhishShield AI model</p>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Model Information Cards -->
+            <div class="cards-grid">
+                <!-- Model Status -->
+                <div class="info-card">
+                    <h3 class="card-title">🤖 Model Status</h3>
+                    <div class="info-item">
+                        <span class="info-label">Status</span>
+                        <span class="status-indicator {% if model_info.exists %}status-online{% else %}status-offline{% endif %}">
+                            {% if model_info.exists %}
+                                🟢 Online
+                            {% else %}
+                                🔴 Offline
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Algorithm</span>
+                        <span class="info-value">{{ model_info.algorithm }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Architecture</span>
+                        <span class="info-value">{{ model_info.architecture }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Parameters</span>
+                        <span class="info-value">{{ model_info.parameters }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Model Size</span>
+                        <span class="info-value">{{ model_info.size }} bytes</span>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="info-card">
+                    <h3 class="card-title">📈 Performance Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-value">{{ model_info.accuracy }}%</div>
+                            <div class="metric-label">Accuracy</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">{{ model_info.precision }}%</div>
+                            <div class="metric-label">Precision</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">{{ model_info.recall }}%</div>
+                            <div class="metric-label">Recall</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">{{ model_info.f1_score }}%</div>
+                            <div class="metric-label">F1 Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Statistics -->
+                <div class="info-card">
+                    <h3 class="card-title">📊 Usage Statistics</h3>
+                    <div class="usage-stats">
+                        <div class="usage-item">
+                            <div class="usage-number">{{ total_scans }}</div>
+                            <div class="usage-label">Total Scans</div>
+                        </div>
+                        <div class="usage-item">
+                            <div class="usage-number">{{ phishing_scans }}</div>
+                            <div class="usage-label">Phishing Detected</div>
+                        </div>
+                        <div class="usage-item">
+                            <div class="usage-number">{{ safe_scans }}</div>
+                            <div class="usage-label">Safe URLs</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Actions -->
+            <div class="actions-card">
+                <h3 class="card-title">⚙️ Model Actions</h3>
+                <div class="actions-grid">
+                    <a href="{% url 'scanner:threat_feed_monitor' %}" class="action-btn btn-threat-feed">
+                        🚨 Threat Feed Monitor
+                    </a>
+                    <button id="retrainBtn" class="action-btn btn-retrain">
+                        🔄 Retrain Model
+                    </button>
+                    <a href="{% url 'scanner:export_model' %}" class="action-btn btn-export">
+                        📄 Export Details
+                    </a>
+                    <a href="{% url 'scanner:profile' %}" class="action-btn btn-back">
+                        ← Back to Profile
+                    </a>
+                </div>
+                
+                <div style="margin-top: 16px; padding: 16px; background: #f5f5f5; border-radius: 4px; border-left: 4px solid var(--md-warning);">
+                    <p style="margin: 0; color: var(--md-text-secondary); font-size: 0.875rem;">
+                        <strong>Note:</strong> Model retraining may take several hours to complete. 
+                        The system will remain operational during this process. Dataset should be in the <strong>/Dataset</strong> folder.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dataset Selection Modal -->
+        <div id="datasetModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">📂 Training Datasets</h3>
+                    <button class="modal-close" onclick="closeDatasetModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    {% if dataset_dir_exists %}
+                        {% if datasets %}
+                            <p style="color: var(--md-text-secondary); margin-bottom: 16px; font-size: 0.875rem;">
+                                Select the datasets to use for model retraining. Multiple datasets can be combined for better performance. Dataset should be in the <strong>/Dataset</strong> folder.
+                            </p>
+                            
+                            <div class="selection-controls">
+                                <button type="button" id="modalSelectAllBtn" class="selection-btn selection-btn-all">
+                                    Select All
+                                </button>
+                                <button type="button" id="modalSelectNoneBtn" class="selection-btn selection-btn-none">
+                                    Select None
+                                </button>
+                            </div>
+                            
+                            <div id="modalDatasetSelection">
+                                {% for dataset in datasets %}
+                                    <div class="dataset-item">
+                                        <input type="checkbox" id="modal_dataset_{{ forloop.counter }}" name="modal_datasets" value="{{ dataset.name }}" class="dataset-checkbox">
+                                        <div class="dataset-info">
+                                            <label for="modal_dataset_{{ forloop.counter }}" class="dataset-name">
+                                                📄 {{ dataset.name }}
+                                            </label>
+                                            <div class="dataset-description">
+                                                {{ dataset.description }}
+                                            </div>
+                                            <div class="dataset-meta">
+                                                <span>Size: {{ dataset.size }} bytes</span>
+                                                <span>Modified: {{ dataset.last_modified|date:"M d, Y H:i" }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Warning Section (shown after selecting datasets) -->
+                            <div id="trainingWarning" class="warning-section">
+                                <div class="warning-title">
+                                    <span class="warning-icon">⚠️</span>
+                                    Important: Model Retraining Process
+                                </div>
+                                <div class="warning-text">
+                                    Model retraining may take <strong>several hours</strong> to complete. The system will remain operational during this process, but the model will be temporarily unavailable for updates. Dataset should be in the <strong>/Dataset</strong> folder.
+                                </div>
+                                <div class="selected-datasets">
+                                    <div class="selected-datasets-title">Selected Datasets:</div>
+                                    <div id="selectedDatasetsList" class="selected-datasets-list"></div>
+                                </div>
+                                <div class="warning-text">
+                                    Are you sure you want to proceed with the retraining?
+                                </div>
+                            </div>
+                        {% else %}
+                            <div style="text-align: center; padding: 24px; color: var(--md-text-secondary);">
+                                <p>📁 No training datasets found in the <code>/dataset</code> folder.</p>
+                                <p style="font-size: 0.875rem; margin-top: 8px;">
+                                    Please add CSV, JSON, or TXT files to the dataset directory to enable model retraining.
+                                </p>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div style="text-align: center; padding: 24px; color: var(--md-error);">
+                            <p>⚠️ The <code>/dataset</code> folder does not exist.</p>
+                            <p style="font-size: 0.875rem; margin-top: 8px;">
+                                Please create the dataset directory and add training files to enable model retraining.
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn modal-btn-cancel" onclick="closeDatasetModal()">Cancel</button>
+                    <button type="button" id="showWarningBtn" class="modal-btn modal-btn-primary" {% if not datasets %}disabled{% endif %}>
+                        Continue
+                    </button>
+                    <button type="button" id="confirmRetrainBtn" class="modal-btn modal-btn-primary" style="display: none;">
+                        🔄 Confirm Retraining
+                    </button>
+                    <button type="button" id="backToSelectionBtn" class="modal-btn modal-btn-cancel" style="display: none;">
+                        ← Back to Selection
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="{% url 'scanner:home' %}">Home</a>
+                    <a href="{% url 'scanner:scan' %}">Scan</a>
+                    <a href="{% url 'scanner:about' %}">Analytics</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Modal control functions
+        function openDatasetModal() {
+            document.getElementById('datasetModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDatasetModal() {
+            document.getElementById('datasetModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Reset modal to initial state
+            backToSelection();
+            
+            // Clear all selections
+            const checkboxes = document.querySelectorAll('input[name="modal_datasets"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateButtonStates();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('datasetModal');
+            if (event.target === modal) {
+                closeDatasetModal();
+            }
+        }
+
+        // Dataset selection handlers in modal
+        document.getElementById('modalSelectAllBtn')?.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('input[name="modal_datasets"]');
+            checkboxes.forEach(cb => cb.checked = true);
+            updateButtonStates();
+        });
+
+        document.getElementById('modalSelectNoneBtn')?.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('input[name="modal_datasets"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateButtonStates();
+        });
+
+        // Update button states
+        function updateButtonStates() {
+            const selectedDatasets = document.querySelectorAll('input[name="modal_datasets"]:checked');
+            const showWarningBtn = document.getElementById('showWarningBtn');
+            const confirmBtn = document.getElementById('confirmRetrainBtn');
+            
+            if (showWarningBtn) {
+                showWarningBtn.disabled = selectedDatasets.length === 0;
+            }
+            if (confirmBtn) {
+                confirmBtn.disabled = selectedDatasets.length === 0;
+            }
+        }
+        
+        // Show warning section
+        function showWarningSection() {
+            const selectedDatasets = Array.from(document.querySelectorAll('input[name="modal_datasets"]:checked'))
+                                          .map(cb => cb.value);
+            
+            if (selectedDatasets.length === 0) {
+                alert('Please select at least one dataset for training.');
+                return;
+            }
+            
+            // Update the selected datasets list
+            const datasetsList = document.getElementById('selectedDatasetsList');
+            datasetsList.innerHTML = selectedDatasets.map(name => `• ${name}`).join('<br>');
+            
+            // Hide selection section and show warning
+            document.getElementById('modalDatasetSelection').style.display = 'none';
+            document.querySelector('.selection-controls').style.display = 'none';
+            document.querySelector('.modal-body p').style.display = 'none';
+            document.getElementById('trainingWarning').classList.add('show');
+            
+            // Update modal title
+            document.querySelector('.modal-title').innerHTML = '⚠️ Confirm Model Retraining';
+            
+            // Switch buttons
+            document.getElementById('showWarningBtn').style.display = 'none';
+            document.getElementById('confirmRetrainBtn').style.display = 'inline-block';
+            document.getElementById('backToSelectionBtn').style.display = 'inline-block';
+        }
+        
+        // Go back to selection
+        function backToSelection() {
+            // Show selection section and hide warning
+            document.getElementById('modalDatasetSelection').style.display = 'block';
+            document.querySelector('.selection-controls').style.display = 'flex';
+            document.querySelector('.modal-body p').style.display = 'block';
+            document.getElementById('trainingWarning').classList.remove('show');
+            
+            // Reset modal title
+            document.querySelector('.modal-title').innerHTML = '📂 Training Datasets';
+            
+            // Switch buttons back
+            document.getElementById('showWarningBtn').style.display = 'inline-block';
+            document.getElementById('confirmRetrainBtn').style.display = 'none';
+            document.getElementById('backToSelectionBtn').style.display = 'none';
+        }
+
+        // Add event listeners to checkboxes
+        document.querySelectorAll('input[name="modal_datasets"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateButtonStates);
+        });
+        
+        // Show warning button handler
+        document.getElementById('showWarningBtn')?.addEventListener('click', showWarningSection);
+        
+        // Back to selection button handler  
+        document.getElementById('backToSelectionBtn')?.addEventListener('click', backToSelection);
+
+        // Retrain model button - opens modal
+        document.getElementById('retrainBtn').addEventListener('click', function() {
+            {% if not dataset_dir_exists %}
+                alert('Dataset directory does not exist. Please create the /dataset folder and add training files.');
+                return;
+            {% endif %}
+            
+            {% if not datasets %}
+                alert('No datasets found in the /dataset folder. Please add CSV, JSON, or TXT files to enable model retraining.');
+                return;
+            {% endif %}
+            
+            openDatasetModal();
+        });
+
+        // Confirm retraining in modal
+        document.getElementById('confirmRetrainBtn')?.addEventListener('click', function() {
+            const selectedDatasets = Array.from(document.querySelectorAll('input[name="modal_datasets"]:checked'))
+                                          .map(cb => cb.value);
+            
+            if (selectedDatasets.length === 0) {
+                alert('Please select at least one dataset for training.');
+                return;
+            }
+
+            // Close modal first
+            closeDatasetModal();
+            
+            // Start retraining immediately (warning already shown in modal)
+            const retrainBtn = document.getElementById('retrainBtn');
+            retrainBtn.disabled = true;
+            retrainBtn.innerHTML = '⏳ Retraining...';
+            
+            fetch('{% url "scanner:retrain_model" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'datasets': selectedDatasets
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(`Model retraining initiated successfully with ${data.datasets_count} dataset(s)!\n\nThis process will take several hours to complete.`);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                    retrainBtn.disabled = false;
+                    retrainBtn.innerHTML = '🔄 Retrain Model';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while initiating retraining.');
+                retrainBtn.disabled = false;
+                retrainBtn.innerHTML = '🔄 Retrain Model';
+            });
+        });
+
+        // Initialize button states
+        updateButtonStates();
+    </script>
+    
+    {% csrf_token %}
+</body>
+</html>

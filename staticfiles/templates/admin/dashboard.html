@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard - PhishShield">
+    <title>Admin Dashboard - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield Admin</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">Scan</a>
+                    <a href="{% url 'scanner:about' %}" class="nav-link">About</a>
+                    <a href="{% url 'scanner:profile' %}" class="nav-link">Profile</a>
+                    <a href="{% url 'scanner:logout' %}" class="nav-link">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="section">
+            <div class="container">
+                <h1 class="hero-title">Admin Dashboard</h1>
+                <p class="hero-subtitle">Manage users, monitor activity, and oversee system operations</p>
+                
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{{ total_users }}</h3>
+                            <p class="stat-label">Total Users</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">🔍</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{{ total_scans }}</h3>
+                            <p class="stat-label">Total Scans</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{{ recent_activities|length }}</h3>
+                            <p class="stat-label">Recent Activities</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Management -->
+                <div class="admin-section">
+                    <h2 class="section-title">User Management</h2>
+                    <div class="user-table-container">
+                        <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            <span class="user-type user-type-{{ user.user_type }}">
+                                                {{ user.get_user_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="user-status user-status-{{ user.is_active|yesno:'active,inactive' }}">
+                                                {{ user.is_active|yesno:'Active,Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <a href="{% url 'scanner:admin_user_edit' user.id %}" class="btn btn-small btn-primary">Edit</a>
+                                                <a href="{% url 'scanner:admin_user_password' user.id %}" class="btn btn-small btn-secondary">Password</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Recent Activities -->
+                <div class="admin-section">
+                    <h2 class="section-title">Recent Activities</h2>
+                    <div class="activity-list">
+                        {% for activity in recent_activities %}
+                            <div class="activity-item">
+                                <div class="activity-icon activity-{{ activity.activity_type }}">
+                                    {% if activity.activity_type == 'login' %}🔑
+                                    {% elif activity.activity_type == 'logout' %}🚪
+                                    {% elif activity.activity_type == 'scan' %}🔍
+                                    {% elif activity.activity_type == 'signup' %}👤
+                                    {% elif activity.activity_type == 'password_change' %}🔒
+                                    {% elif activity.activity_type == 'profile_update' %}✏️
+                                    {% elif activity.activity_type == 'admin_action' %}⚙️
+                                    {% else %}📝{% endif %}
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-description">{{ activity.description }}</div>
+                                    <div class="activity-meta">
+                                        <span class="activity-user">{{ activity.user.username }}</span>
+                                        <span class="activity-time">{{ activity.timestamp|date:"M d, Y H:i" }}</span>
+                                        {% if activity.ip_address %}
+                                            <span class="activity-ip">{{ activity.ip_address }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-state">
+                                <p>No recent activities</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#docs">Docs</a>
+                    <a href="#api">API</a>
+                    <a href="#blog">Blog</a>
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                </div>
+                <div class="footer-cta">
+                    <a href="{% url 'scanner:scan' %}" class="btn btn-primary">Get Started Free</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+        
+        .admin-section {
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .user-table-container {
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .user-table th,
+        .user-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .user-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .user-type {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .user-type-user {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .user-type-admin {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .user-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .user-status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .user-status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .activity-list {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            font-size: 1.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f8f9fa;
+        }
+        
+        .activity-login { background: #d4edda; }
+        .activity-logout { background: #f8d7da; }
+        .activity-scan { background: #d1ecf1; }
+        .activity-signup { background: #e2e3e5; }
+        .activity-password_change { background: #fff3cd; }
+        .activity-profile_update { background: #cce5ff; }
+        .activity-admin_action { background: #f3e5f5; }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-description {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .activity-user {
+            font-weight: 600;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-table-container {
+                font-size: 0.875rem;
+            }
+            
+            .user-table th,
+            .user-table td {
+                padding: 0.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .activity-meta {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+        }
+    </style>
+</body>
+</html>

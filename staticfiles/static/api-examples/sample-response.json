@@ -1,0 +1,49 @@
+{
+  "url": "https://example.com/login?id=123",
+  "verdict": "Safe",
+  "score": 15,
+  "confidence": 0.92,
+  "indicators": [
+    "Valid SSL certificate",
+    "No suspicious keywords detected",
+    "Short URL length (acceptable)",
+    "Legitimate domain reputation",
+    "No redirect chain anomalies",
+    "Standard port usage (443)"
+  ],
+  "recommendation": "This URL appears safe to visit. No security concerns detected.",
+  "evidence": {
+    "redirect_chain": ["https://example.com/login?id=123"],
+    "whois": {
+      "registrar": "Example Registrar Inc.",
+      "creation_date": "2020-01-15",
+      "expiration_date": "2025-01-15",
+      "organization": "Example Corp"
+    },
+    "ssl_info": {
+      "valid": true,
+      "issuer": "Let's Encrypt",
+      "expires": "2024-12-31"
+    }
+  },
+  "features": {
+    "url_length": 32,
+    "domain_length": 11,
+    "path_length": 6,
+    "query_length": 8,
+    "num_dots": 1,
+    "num_hyphens": 0,
+    "num_underscores": 0,
+    "num_slashes": 2,
+    "has_ip": false,
+    "has_shortener": false,
+    "has_suspicious_keywords": false,
+    "subdomain_count": 0,
+    "has_www": false,
+    "is_https": true,
+    "path_depth": 1,
+    "has_file_extension": false
+  },
+  "timestamp": "2024-09-09T16:30:45Z",
+  "analysis_time_ms": 1250
+}

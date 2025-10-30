@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sign up for PhishShield - Create your account">
+    <title>Sign Up - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+        }
+        
+        .auth-title {
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        
+        .btn-auth {
+            width: 100%;
+            background: #333;
+            color: #fff;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-auth:hover {
+            background: #555;
+        }
+        
+        .auth-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+        
+        .auth-link a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+        
+        .message {
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .errorlist {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            list-style: none;
+            padding: 0;
+        }
+        
+        .help-text {
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">🏠 Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">🔍 Scan</a>
+                    <a href="{% url 'scanner:about' %}" class="nav-link">📊 Analytics</a>
+                    <a href="{% url 'scanner:login' %}" class="nav-link">🔑 Login</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="section">
+            <div class="container">
+                <div class="auth-container">
+                    <h1 class="auth-title">Sign Up for PhishShield</h1>
+                    
+                    {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                                <div class="message {{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                            {{ form.username }}
+                            {% if form.username.help_text %}
+                                <div class="help-text">{{ form.username.help_text }}</div>
+                            {% endif %}
+                            {% if form.username.errors %}
+                                <ul class="errorlist">
+                                    {% for error in form.username.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
+                            {{ form.password1 }}
+                            {% if form.password1.help_text %}
+                                <div class="help-text">{{ form.password1.help_text }}</div>
+                            {% endif %}
+                            {% if form.password1.errors %}
+                                <ul class="errorlist">
+                                    {% for error in form.password1.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
+                            {{ form.password2 }}
+                            {% if form.password2.help_text %}
+                                <div class="help-text">{{ form.password2.help_text }}</div>
+                            {% endif %}
+                            {% if form.password2.errors %}
+                                <ul class="errorlist">
+                                    {% for error in form.password2.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="btn-auth">Sign Up</button>
+                    </form>
+                    
+                    <div class="auth-link">
+                        Already have an account? <a href="{% url 'scanner:login' %}">Login</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="{% url 'scanner:home' %}">Home</a>
+                    <a href="{% url 'scanner:scan' %}">Scan</a>
+                    <a href="{% url 'scanner:about' %}">About</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add form input class to Django form fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+            inputs.forEach(input => {
+                input.classList.add('form-input');
+            });
+        });
+    </script>
+</body>
+</html>

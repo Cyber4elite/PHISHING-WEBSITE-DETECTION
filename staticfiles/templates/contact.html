@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact PhishShield - Get in touch with our team">
+    <title>Contact - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+    <style>
+        .hero-contact {
+            background: #f8f9fa;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero-contact h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-contact p {
+            font-size: 1.25rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .contact-form {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 2rem;
+        }
+        
+        .contact-form h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #333;
+        }
+        
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .form-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        
+        .form-success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .contact-info {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+        
+        .contact-info h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-item h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-item p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-item a {
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-link {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #333;
+            color: #fff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+        
+        .social-link:hover {
+            background: #555;
+        }
+        
+        .alternative-contact {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .alternative-contact h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .alternative-contact p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .contact-method {
+            padding: 1rem;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+        }
+        
+        .contact-method h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-method p {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .contact-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">Scan</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#docs" class="nav-link">Docs</a>
+                    <a href="#pricing" class="nav-link">Pricing</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero-contact">
+            <div class="container">
+                <h1>Get in touch with us</h1>
+                <p>Have questions about PhishShield? We're here to help. Send us a message and we'll get back to you as soon as possible.</p>
+            </div>
+        </section>
+
+        <section class="contact-container">
+            <div class="container">
+                <div class="contact-grid">
+                    <!-- Contact Form -->
+                    <div class="contact-form">
+                        <h2>Send us a message</h2>
+                        <div class="form-success" id="form-success">
+                            Message sent successfully! We'll get back to you soon.
+                        </div>
+                        <form id="contact-form">
+                            <div class="form-group">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" id="name" name="name" class="form-input" required>
+                                <div class="form-error" id="name-error">Please enter your name</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" id="email" name="email" class="form-input" required>
+                                <div class="form-error" id="email-error">Please enter a valid email address</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subject" class="form-label">Subject *</label>
+                                <input type="text" id="subject" name="subject" class="form-input" required>
+                                <div class="form-error" id="subject-error">Please enter a subject</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message" class="form-label">Message *</label>
+                                <textarea id="message" name="message" class="form-textarea" required></textarea>
+                                <div class="form-error" id="message-error">Please enter your message</div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="contact-info">
+                        <h2>Contact Information</h2>
+                        
+                        <div class="contact-item">
+                            <h3>Email</h3>
+                            <p><a href="mailto:support@phishshield.com">support@phishshield.com</a></p>
+                            <p>We typically respond within 24 hours</p>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <h3>Sales</h3>
+                            <p><a href="mailto:sales@phishshield.com">sales@phishshield.com</a></p>
+                            <p>For enterprise inquiries and custom plans</p>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <h3>Support</h3>
+                            <p><a href="mailto:help@phishshield.com">help@phishshield.com</a></p>
+                            <p>Technical support and bug reports</p>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <h3>Follow Us</h3>
+                            <div class="social-links">
+                                <a href="#" class="social-link" aria-label="Twitter">T</a>
+                                <a href="#" class="social-link" aria-label="LinkedIn">L</a>
+                                <a href="#" class="social-link" aria-label="GitHub">G</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alternative Contact Methods -->
+                <div class="alternative-contact">
+                    <h2>Other ways to reach us</h2>
+                    <p>Prefer a different way to get in touch? We're available through multiple channels.</p>
+                    
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <h3>Documentation</h3>
+                            <p>Check our comprehensive docs for answers to common questions</p>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <h3>Community Forum</h3>
+                            <p>Join our community to get help from other users</p>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <h3>Status Page</h3>
+                            <p>Check our service status and uptime information</p>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <h3>Bug Reports</h3>
+                            <p>Report issues and bugs through our GitHub repository</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#docs">Docs</a>
+                    <a href="#api">API</a>
+                    <a href="#blog">Blog</a>
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                </div>
+                <div class="footer-cta">
+                    <a href="{% url 'scanner:scan' %}" class="btn btn-primary">Get Started Free</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('contact-form');
+            const successMessage = document.getElementById('form-success');
+            
+            // Form validation
+            function validateForm() {
+                let isValid = true;
+                
+                // Clear previous errors
+                document.querySelectorAll('.form-error').forEach(error => {
+                    error.style.display = 'none';
+                });
+                
+                // Validate name
+                const name = document.getElementById('name').value.trim();
+                if (!name) {
+                    document.getElementById('name-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate email
+                const email = document.getElementById('email').value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email || !emailRegex.test(email)) {
+                    document.getElementById('email-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate subject
+                const subject = document.getElementById('subject').value.trim();
+                if (!subject) {
+                    document.getElementById('subject-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate message
+                const message = document.getElementById('message').value.trim();
+                if (!message) {
+                    document.getElementById('message-error').style.display = 'block';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (validateForm()) {
+                    // Simulate form submission
+                    successMessage.style.display = 'block';
+                    form.reset();
+                    
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 5000);
+                }
+            });
+            
+            // Real-time validation
+            const inputs = form.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateForm();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="About PhishShield - Securing the web, one link at a time">
+    <title>About - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+    <style>
+        .hero-about {
+            background: #f8f9fa;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero-about h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-about p {
+            font-size: 1.25rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .content-section {
+            padding: 3rem 0;
+        }
+        
+        .content-section h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        .content-section p {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+        
+        .tech-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .tech-list li {
+            padding: 0.5rem 0;
+            color: #666;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .tech-list li:before {
+            content: "•";
+            color: #333;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .team-member {
+            text-align: center;
+            padding: 1.5rem;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+        }
+        
+        .team-member h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .team-member p {
+            color: #666;
+            font-size: 0.875rem;
+        }
+        
+        .privacy-highlight {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid #333;
+            margin: 2rem 0;
+        }
+        
+        .privacy-highlight h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .privacy-highlight p {
+            color: #666;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">Scan</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#docs" class="nav-link">Docs</a>
+                    <a href="#pricing" class="nav-link">Pricing</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero-about">
+            <div class="container">
+                <h1>Securing the web, one link at a time</h1>
+                <p>PhishShield is a comprehensive phishing detection platform designed to protect users and organizations from malicious URLs through advanced machine learning and heuristic analysis.</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <h2>Our Mission</h2>
+                <p>We believe that everyone deserves to browse the internet safely. PhishShield was created to provide instant, accurate phishing detection that works seamlessly in the background, protecting users from malicious links before they can cause harm.</p>
+                
+                <p>Our platform combines cutting-edge machine learning algorithms with proven heuristic techniques to deliver the most accurate phishing detection available, all while maintaining the highest standards of privacy and security.</p>
+            </div>
+        </section>
+
+        <section class="content-section section-alt">
+            <div class="container">
+                <h2>Technology</h2>
+                <p>PhishShield leverages multiple layers of analysis to detect phishing attempts:</p>
+                
+                <ul class="tech-list">
+                    <li><strong>Machine Learning:</strong> Q-Learning algorithms trained on millions of URLs</li>
+                    <li><strong>Heuristic Analysis:</strong> Pattern recognition and rule-based detection</li>
+                    <li><strong>Reputation Databases:</strong> Real-time domain and IP reputation checks</li>
+                    <li><strong>Redirect Unfolding:</strong> Follow redirect chains to final destinations</li>
+                    <li><strong>SSL Analysis:</strong> Certificate validation and security assessment</li>
+                    <li><strong>Content Analysis:</strong> Keyword detection and suspicious pattern matching</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <h2>Privacy First</h2>
+                <div class="privacy-highlight">
+                    <h3>No Persistent Storage</h3>
+                    <p>We analyze URLs in memory only and never store your data without explicit consent. Your privacy is our top priority.</p>
+                </div>
+                
+                <p>PhishShield is designed with privacy at its core. We believe that security tools should protect users without compromising their privacy. That's why we:</p>
+                
+                <ul class="tech-list">
+                    <li>Process URLs in memory only</li>
+                    <li>Never store personal data without consent</li>
+                    <li>Are fully GDPR compliant</li>
+                    <li>Support enterprise SSO and data residency requirements</li>
+                    <li>Provide transparent data handling policies</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section section-alt">
+            <div class="container">
+                <h2>Team & Credits</h2>
+                <p>PhishShield is built by a team of security researchers, machine learning engineers, and privacy advocates who are passionate about making the internet safer for everyone.</p>
+                
+                <div class="team-grid">
+                    <div class="team-member">
+                        <h4>Security Research Team</h4>
+                        <p>Expert researchers who continuously analyze new phishing techniques and develop countermeasures.</p>
+                    </div>
+                    
+                    <div class="team-member">
+                        <h4>ML Engineering Team</h4>
+                        <p>Machine learning specialists who develop and maintain our AI detection algorithms.</p>
+                    </div>
+                    
+                    <div class="team-member">
+                        <h4>Privacy Team</h4>
+                        <p>Privacy advocates ensuring our platform meets the highest standards of data protection.</p>
+                    </div>
+                    
+                    <div class="team-member">
+                        <h4>Open Source Community</h4>
+                        <p>Contributors from around the world who help improve our detection capabilities.</p>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 2rem; text-align: center; color: #666;">
+                    <strong>Special thanks to:</strong> The cybersecurity community, open source contributors, and all users who help us improve PhishShield through feedback and testing.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#docs">Docs</a>
+                    <a href="#api">API</a>
+                    <a href="#blog">Blog</a>
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                </div>
+                <div class="footer-cta">
+                    <a href="{% url 'scanner:scan' %}" class="btn btn-primary">Get Started Free</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

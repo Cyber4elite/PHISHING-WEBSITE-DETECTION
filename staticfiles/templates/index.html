@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Scan a URL for phishing threats with PhishShield">
+    <title>Scan URL - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">🏠 Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link active">🔍 Scan</a>
+                    <a href="{% url 'scanner:about' %}" class="nav-link">📊 Analytics</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'scanner:profile' %}" class="nav-link">👤 {{ user.username }}</a>
+                        <a href="{% url 'scanner:logout' %}" class="nav-link">🚪 Logout</a>
+                    {% else %}
+                        <a href="{% url 'scanner:login' %}" class="nav-link">🔑 Login</a>
+                        <a href="{% url 'scanner:signup' %}" class="nav-link">📝 Sign Up</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="scan-header">
+            <div class="container">
+                <h1 class="scan-title">Analyze Any Text</h1>
+                <p class="scan-subtitle">Enter any text or URL - no validation restrictions!</p>
+                <a href="{% url 'scanner:home' %}" class="back-link">← Back to Home</a>
+</div>
+        </section>
+
+        <section class="scan-container">
+            <div class="container">
+                <form class="scan-form" id="scan-form" method="post" action="{% url 'scanner:analyze' %}" novalidate>
+        {% csrf_token %}
+        <div class="form-group">
+                        <label for="url-input" class="form-label">Enter any text to analyze</label>
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                id="url-input"
+                                name="url"
+                                class="form-input"
+                                placeholder="Enter any URL"
+                                aria-label="Enter any text to scan"
+                                autocomplete="off"
+                                spellcheck="false"
+                            >
+                            <button type="submit" class="btn btn-primary" id="scan-btn">
+                                <span class="btn-text">Scan Now</span>
+                                <span class="btn-loading hidden">Scanning...</span>
+                            </button>
+                        </div>
+                        <!-- All validation removed - no error messages displayed -->
+        </div>
+    </form>
+
+                <div class="scan-info">
+                    <div class="info-item">
+                        <span>🔒</span>
+                        <span>Your URL is analyzed securely and not stored</span>
+                    </div>
+                    <div class="info-item">
+                        <span>⚡</span>
+                        <span>Analysis typically takes 2-5 seconds</span>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="results-section" class="hidden">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <h2 class="result-title">Analysis Results</h2>
+                            <span id="verdict-badge" class="verdict-badge"></span>
+</div>
+
+                        <div class="result-details">
+                            <div class="detail-group">
+                                <h4>URL</h4>
+                                <p id="result-url"></p>
+                                
+                                <h4>Threat Score</h4>
+                                <div class="score-bar">
+                                    <div id="score-fill" class="score-fill"></div>
+                                </div>
+                                <p id="score-text"></p>
+        </div>
+                            
+                            <div class="detail-group">
+                                <h4>Top Indicators</h4>
+                                <ul id="indicators" class="indicators"></ul>
+                                
+                                <h4>Recommended Action</h4>
+                                <p id="recommendation"></p>
+        </div>
+        </div>
+    </div>
+</div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="text-center" style="padding: 3rem 0; color: #666;">
+                    <h3>Ready to scan</h3>
+                    <p>Paste a URL above to begin scanning</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="{% url 'scanner:home' %}">Home</a>
+                    <a href="{% url 'scanner:scan' %}">Scan</a>
+                    <a href="{% url 'scanner:about' %}">About</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample results data
+        const sampleResults = {
+            "url": "https://example.com/login?id=123",
+            "verdict": "Safe",
+            "score": 15,
+            "indicators": [
+                "Valid SSL certificate",
+                "No suspicious keywords detected",
+                "Short URL length (acceptable)",
+                "Legitimate domain reputation"
+            ],
+            "recommendation": "This URL appears safe to visit. No security concerns detected."
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('scan-form');
+            const urlInput = document.getElementById('url-input');
+            const scanBtn = document.getElementById('scan-btn');
+            const urlError = document.getElementById('url-error');
+            const resultsSection = document.getElementById('results-section');
+            const emptyState = document.getElementById('empty-state');
+
+            // Show loading state
+            function showLoading() {
+                scanBtn.classList.add('loading');
+                scanBtn.querySelector('.btn-text').classList.add('hidden');
+                scanBtn.querySelector('.btn-loading').classList.remove('hidden');
+                scanBtn.disabled = true;
+            }
+
+            // Hide loading state
+            function hideLoading() {
+                scanBtn.classList.remove('loading');
+                scanBtn.querySelector('.btn-text').classList.remove('hidden');
+                scanBtn.querySelector('.btn-loading').classList.add('hidden');
+                scanBtn.disabled = false;
+            }
+
+            // Display results
+            function displayResults(data) {
+                const verdictBadge = document.getElementById('verdict-badge');
+                const resultUrl = document.getElementById('result-url');
+                const scoreFill = document.getElementById('score-fill');
+                const scoreText = document.getElementById('score-text');
+                const indicators = document.getElementById('indicators');
+                const recommendation = document.getElementById('recommendation');
+
+                // Set verdict and styling
+                verdictBadge.textContent = data.verdict;
+                verdictBadge.className = `verdict-badge verdict-${data.verdict.toLowerCase()}`;
+
+                // Set URL
+                resultUrl.textContent = data.url;
+
+                // Set score
+                const scorePercentage = data.score;
+                scoreFill.style.width = `${scorePercentage}%`;
+                scoreFill.className = `score-fill ${
+                    scorePercentage < 30 ? 'score-low' :
+                    scorePercentage < 70 ? 'score-medium' : 'score-high'
+                }`;
+                scoreText.textContent = `${scorePercentage}/100`;
+
+                // Set indicators
+                indicators.innerHTML = data.indicators.map(indicator => 
+                    `<li>${indicator}</li>`
+                ).join('');
+
+                // Set recommendation
+                recommendation.textContent = data.recommendation;
+
+                // Show results
+                emptyState.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+            }
+
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                const url = urlInput.value.trim();
+                
+                // Clear previous errors
+                urlError.classList.add('hidden');
+                urlInput.style.borderColor = '#ddd';
+                
+                // Show loading
+                showLoading();
+                
+                // Let the form submit normally to Django backend
+                // No preventDefault() - form will submit to Django
+            });
+        });
+    </script>
+</body>
+</html>

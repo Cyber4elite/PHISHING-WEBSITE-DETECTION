@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Edit User - PhishShield Admin">
+    <title>Edit User - PhishShield Admin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield Admin</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:admin_dashboard' %}" class="nav-link">← Back to Dashboard</a>
+                    <a href="{% url 'scanner:home' %}" class="nav-link">Home</a>
+                    <a href="{% url 'scanner:logout' %}" class="nav-link">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="section">
+            <div class="container">
+                <h1 class="hero-title">Edit User: {{ target_user.username }}</h1>
+                <p class="hero-subtitle">Manage user account settings and permissions</p>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="admin-container">
+                    <!-- User Edit Form -->
+                    <div class="admin-card">
+                        <h2 class="card-title">User Information</h2>
+                        <form method="post" class="admin-form">
+                            {% csrf_token %}
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="form-error">
+                                            {% for error in form.username.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="form-error">
+                                            {% for error in form.email.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="form-error">
+                                            {% for error in form.first_name.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="form-error">
+                                            {% for error in form.last_name.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="{{ form.user_type.id_for_label }}" class="form-label">User Type</label>
+                                    {{ form.user_type }}
+                                    {% if form.user_type.errors %}
+                                        <div class="form-error">
+                                            {% for error in form.user_type.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Account Status</label>
+                                    <div class="checkbox-group">
+                                        {{ form.is_active }}
+                                        <label for="{{ form.is_active.id_for_label }}" class="checkbox-label">Active Account</label>
+                                    </div>
+                                    {% if form.is_active.errors %}
+                                        <div class="form-error">
+                                            {% for error in form.is_active.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Update User</button>
+                                <a href="{% url 'scanner:admin_user_password' target_user.id %}" class="btn btn-secondary">Change Password</a>
+                                <a href="{% url 'scanner:admin_dashboard' %}" class="btn btn-outline">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- User Activity -->
+                    <div class="admin-card">
+                        <h2 class="card-title">User Activity</h2>
+                        {% if user_activities %}
+                            <div class="activity-list">
+                                {% for activity in user_activities %}
+                                    <div class="activity-item">
+                                        <div class="activity-icon activity-{{ activity.activity_type }}">
+                                            {% if activity.activity_type == 'login' %}🔑
+                                            {% elif activity.activity_type == 'logout' %}🚪
+                                            {% elif activity.activity_type == 'scan' %}🔍
+                                            {% elif activity.activity_type == 'signup' %}👤
+                                            {% elif activity.activity_type == 'password_change' %}🔒
+                                            {% elif activity.activity_type == 'profile_update' %}✏️
+                                            {% elif activity.activity_type == 'admin_action' %}⚙️
+                                            {% else %}📝{% endif %}
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-description">{{ activity.description }}</div>
+                                            <div class="activity-meta">
+                                                <span class="activity-time">{{ activity.timestamp|date:"M d, Y H:i" }}</span>
+                                                {% if activity.ip_address %}
+                                                    <span class="activity-ip">{{ activity.ip_address }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state">
+                                <p>No activity recorded for this user</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- User Statistics -->
+                    <div class="admin-card">
+                        <h2 class="card-title">User Statistics</h2>
+                        <div class="user-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Account Created:</span>
+                                <span class="stat-value">{{ target_user.date_joined|date:"F d, Y" }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Last Login:</span>
+                                <span class="stat-value">{{ target_user.last_login|date:"F d, Y H:i" }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Last Login IP:</span>
+                                <span class="stat-value">{{ target_user.last_login_ip|default:"Not recorded" }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Email Verified:</span>
+                                <span class="stat-value">{{ target_user.is_verified|yesno:"Yes,No" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#docs">Docs</a>
+                    <a href="#api">API</a>
+                    <a href="#blog">Blog</a>
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                </div>
+                <div class="footer-cta">
+                    <a href="{% url 'scanner:scan' %}" class="btn btn-primary">Get Started Free</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .admin-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .admin-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .admin-form {
+            margin-bottom: 0;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-label {
+            margin: 0;
+            font-weight: normal;
+        }
+        
+        .form-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #333;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .btn-outline:hover {
+            background: #f8f9fa;
+        }
+        
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            font-size: 1.25rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f8f9fa;
+        }
+        
+        .activity-login { background: #d4edda; }
+        .activity-logout { background: #f8d7da; }
+        .activity-scan { background: #d1ecf1; }
+        .activity-signup { background: #e2e3e5; }
+        .activity-password_change { background: #fff3cd; }
+        .activity-profile_update { background: #cce5ff; }
+        .activity-admin_action { background: #f3e5f5; }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-description {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .activity-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: #666;
+        }
+        
+        .user-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .stat-value {
+            color: #333;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+        }
+        
+        .alert {
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</body>
+</html>

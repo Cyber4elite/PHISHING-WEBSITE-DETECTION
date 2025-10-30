@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="User Profile - PhishShield">
+    <title>Profile - PhishShield</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        
+        .profile-header {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-info {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .admin-badge {
+            color: #28a745;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .scan-history {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+        }
+        
+        .scan-history-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        .scan-item {
+            padding: 1rem;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.2s;
+        }
+        
+        .scan-item:hover {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .scan-url {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+        
+        .scan-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .scan-result {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .scan-result.phishing {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .scan-result.legitimate {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .scan-confidence {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .scan-date {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .no-scans {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+        
+        .pagination-info {
+            color: var(--md-text-secondary);
+            font-size: 0.875rem;
+            margin-right: 16px;
+        }
+        
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination a {
+            color: var(--md-primary);
+            background: rgba(25, 118, 210, 0.04);
+        }
+        
+        .pagination a:hover {
+            background: rgba(25, 118, 210, 0.08);
+            transform: translateY(-1px);
+        }
+        
+        .pagination .current {
+            background: var(--md-primary);
+            color: white;
+        }
+        
+        .pagination .disabled {
+            color: var(--md-text-disabled);
+            background: transparent;
+            cursor: not-allowed;
+        }
+        
+        .scan-new-btn {
+            background: #333;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            display: inline-block;
+        }
+        
+        .scan-new-btn:hover {
+            background: #555;
+            color: #fff;
+        }
+        
+        .admin-btn {
+            background: #dc3545;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            display: inline-block;
+        }
+        
+        .admin-btn:hover {
+            background: #c82333;
+            color: #fff;
+        }
+        
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+        
+        .message {
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .admin-features {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-features h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .admin-features ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .admin-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .admin-links {
+            margin-top: 1rem;
+        }
+        
+        .admin-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+        
+        .admin-link.users {
+            background: #17a2b8;
+            color: #fff;
+        }
+        
+        .admin-link.activity {
+            background: #6f42c1;
+            color: #fff;
+        }
+        
+        .admin-link.scans {
+            background: #fd7e14;
+            color: #fff;
+        }
+        
+        .admin-link:hover {
+            opacity: 0.8;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-brand">
+                    <h1 class="logo">PhishShield</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="{% url 'scanner:home' %}" class="nav-link">🏠 Home</a>
+                    <a href="{% url 'scanner:scan' %}" class="nav-link">🔍 Scan</a>
+                    <a href="{% url 'scanner:about' %}" class="nav-link">📊 Analytics</a>
+                    <a href="{% url 'scanner:profile' %}" class="nav-link active">👤 {{ user.username }}</a>
+                    <a href="{% url 'scanner:logout' %}" class="nav-link">🚪 Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="section">
+            <div class="container">
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="message {{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <h1 class="profile-title">Welcome, {{ user.username }}!</h1>
+                        <div class="profile-info">
+                            <p><strong>Member since:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                            <p><strong>Total scans:</strong> {{ total_scans }}</p>
+                            {% if user.is_staff or user.is_superuser %}
+                                <div class="admin-badge">
+                                    <span>👑</span>
+                                    <span>Administrator</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="profile-actions">
+                            <a href="{% url 'scanner:scan' %}" class="scan-new-btn">Scan New URL</a>
+                            {% if user.is_staff or user.is_superuser %}
+                                <a href="/admin/" class="admin-btn">Admin Panel</a>
+                                <a href="{% url 'scanner:model_maintenance' %}" class="admin-btn" style="background: #17a2b8;">🔧 Model Maintenance</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if user.is_staff or user.is_superuser %}
+                        <div class="admin-features">
+                            <h3>📈 Recent Activities</h3>
+                            {% if user.activities.all %}
+                                <div style="max-height: 200px; overflow-y: auto; background: #fff; padding: 1rem; border-radius: 4px; border: 1px solid #e9ecef;">
+                                    {% for activity in user.activities.all|slice:":10" %}
+                                        <div style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem;">
+                                            <strong>{{ activity.get_action_display }}</strong>
+                                            <span style="color: #666; margin-left: 1rem;">{{ activity.timestamp|date:"M d, H:i" }}</span>
+                                            {% if activity.ip_address %}
+                                                <span style="color: #888; margin-left: 1rem;">IP: {{ activity.ip_address }}</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p style="color: #666; font-style: italic;">No recent activities</p>
+                            {% endif %}
+                            <div class="admin-links" style="margin-top: 1rem;">
+                                <a href="/admin/auth/user/" class="admin-link users">Manage Users</a>
+                                <a href="/admin/scanner/useractivity/" class="admin-link activity">View All Activity</a>
+                                <a href="/admin/scanner/scanreport/" class="admin-link scans">All Scans</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="scan-history">
+                        <h2 class="scan-history-title">📋 Your Scan History</h2>
+                        
+                        {% if user_reports %}
+                            {% for report in user_reports %}
+                                <div class="scan-item">
+                                    <div class="scan-url">{{ report.url }}</div>
+                                    <div class="scan-details">
+                                        <span class="scan-result {{ report.result }}">
+                                            {% if report.result == 'phishing' %}
+                                                ⚠️ Phishing
+                                            {% else %}
+                                                ✅ Safe
+                                            {% endif %}
+                                        </span>
+                                        <span class="scan-confidence">{{ report.confidence_percentage }}%</span>
+                                        <span class="scan-date">{{ report.timestamp|date:"M d, H:i" }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            
+                            <!-- Pagination -->
+                            {% if user_reports.has_other_pages %}
+                                <div class="pagination">
+                                    <span class="pagination-info">
+                                        Page {{ user_reports.number }} of {{ user_reports.paginator.num_pages }}
+                                        ({{ user_reports.paginator.count }} total scans)
+                                    </span>
+                                    
+                                    {% if user_reports.has_previous %}
+                                        <a href="?page=1">« First</a>
+                                        <a href="?page={{ user_reports.previous_page_number }}">‹ Previous</a>
+                                    {% else %}
+                                        <span class="disabled">« First</span>
+                                        <span class="disabled">‹ Previous</span>
+                                    {% endif %}
+                                    
+                                    <span class="current">{{ user_reports.number }}</span>
+                                    
+                                    {% if user_reports.has_next %}
+                                        <a href="?page={{ user_reports.next_page_number }}">Next ›</a>
+                                        <a href="?page={{ user_reports.paginator.num_pages }}">Last »</a>
+                                    {% else %}
+                                        <span class="disabled">Next ›</span>
+                                        <span class="disabled">Last »</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="no-scans">
+                                <h3>No scans yet</h3>
+                                <p>Start by scanning your first URL to see your history here</p>
+                                <a href="{% url 'scanner:scan' %}" class="scan-new-btn">Scan Your First URL</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="{% url 'scanner:home' %}">Home</a>
+                    <a href="{% url 'scanner:scan' %}">Scan</a>
+                    <a href="{% url 'scanner:about' %}">About</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PhishShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
